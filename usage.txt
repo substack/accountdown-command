@@ -1,0 +1,16 @@
+$0 create ID {OPTIONS}
+
+$0 list
+
+$0 verify ID {OPTIONS}
+
+$0 get ID
+
+$0 put ID
+
+$0 remove ID
+
+$0 help
+
+  Show this message.
+
