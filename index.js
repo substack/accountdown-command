@@ -4,11 +4,17 @@ var through = require('through2');
 var concat = require('concat-stream');
 var readonly = require('read-only-stream');
 
-module.exports = function (users, args, cb) {
+module.exports = function (users, args, opts, cb) {
     var argv = subarg(args, {
         alias: { h: 'help' }
     });
+    if (!opts) opts = {};
+    if (typeof opts === 'function') {
+        cb = opts;
+        opts = {};
+    }
     var cmd = argv._[0];
+    var $0 = opts.command ? opts.command + ' ' : '';
     if (cmd === 'help' || argv.help) {
         return showHelp(opts.command);
     }
@@ -16,18 +22,21 @@ module.exports = function (users, args, cb) {
         argv = subarg(args, {
             alias: { v: 'value', l: 'login' }
         });
-        var opts = {
+        var uopts = {
             login: argv.login,
             value: argv.value
         };
         var output = through();
-        if (cb) {
-            output.on('error', cb);
-            output.on('end', cb);
+        if (cb) output.on('error', cb);
+        if (!argv._[1]) {
+            var err = new Error('usage: ' + $0 + 'create ID {OPTIONS}');
+            process.nextTick(function () { output.emit('error', err) });
+            return readonly(output);
         }
-        users.create(argv._[0], opts, function (err) {
-            if (err) output.emit('error', err);
-            else output.end();
+        users.create(argv._[1], uopts, function (err) {
+            if (err) return output.emit('error', err);
+            output.end();
+            if (cb) cb();
         });
         return readonly(output);
     }
