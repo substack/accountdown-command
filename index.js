@@ -69,6 +69,22 @@ module.exports = function (users, args, opts, cb) {
         });
         return readonly(output);
     }
+    else if (cmd === 'verify') {
+        var output = through();
+        if (cb) output.on('error', cb);
+        if (!argv._[1]) {
+            var err = new Error('usage: ' + $0 + 'verify TYPE {PARAMETERS}');
+            process.nextTick(function () { output.emit('error', err) });
+            return readonly(output);
+        }
+        users.verify(argv._[1], argv, function (err, ok, id) {
+            if (err) return output.emit('error', error(err));
+            if (!ok) return output.emit('error', error('verify failed'));
+            output.end(id + '\n');
+            if (cb) cb(null, ok, id);
+        });
+        return readonly(output);
+    }
 };
 
 function showHelp (cmd, cb) {
