@@ -141,6 +141,28 @@ module.exports = function (users, args, opts, cb) {
         });
         return readonly(output);
     }
+    else if (cmd === 'listlogin') {
+        argv = subarg(args, { alias: { i: 'id' } });
+        var output = through.obj(
+            function (row, enc, next) {
+                this.push(row.key + '\n');
+                next();
+            },
+            function () {
+                if (cb) cb(null);
+                this.push(null);
+            }
+        );
+        if (cb) output.on('error', cb);
+        
+        var id = defined(argv.id, argv._[1]);
+        if (!id) {
+            var err = new Error('usage: ' + $0 + 'listlogin ID');
+            process.nextTick(function () { output.emit('error', err) });
+            return readonly(output);
+        }
+        return readonly(users.listLogin(id).pipe(output));
+    }
 };
 
 function showHelp (cmd, cb) {
