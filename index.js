@@ -107,7 +107,7 @@ module.exports = function (users, args, opts, cb) {
         });
         return readonly(output);
     }
-    else if (cmd === 'remove') {
+    else if (cmd === 'remove' || cmd === 'rm') {
         var output = through();
         if (cb) output.on('error', cb);
         if (!argv._[1]) {
