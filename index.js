@@ -3,6 +3,7 @@ var fs = require('fs');
 var through = require('through2');
 var concat = require('concat-stream');
 var readonly = require('read-only-stream');
+var defined = require('defined');
 
 module.exports = function (users, args, opts, cb) {
     var argv = subarg(args, {
@@ -82,6 +83,42 @@ module.exports = function (users, args, opts, cb) {
             if (!ok) return output.emit('error', error('verify failed'));
             output.end(id + '\n');
             if (cb) cb(null, ok, id);
+        });
+        return readonly(output);
+    }
+    else if (cmd === 'put') {
+        var output = through();
+        if (cb) output.on('error', cb);
+        argv = subarg(args, { alias: { v: 'value' } });
+        var value = defined(argv.value, argv._[2]);
+        if (typeof value === 'string') {
+            value = JSON.parse(value);
+        }
+        
+        if (!argv._[1] || value === undefined) {
+            var err = new Error('usage: ' + $0 + 'put KEY VALUE');
+            process.nextTick(function () { output.emit('error', err) });
+            return readonly(output);
+        }
+        users.put(argv._[1], value, function (err) {
+            if (err) return output.emit('error', err);
+            output.end();
+            if (cb) cb(null);
+        });
+        return readonly(output);
+    }
+    else if (cmd === 'remove') {
+        var output = through();
+        if (cb) output.on('error', cb);
+        if (!argv._[1]) {
+            var err = new Error('usage: ' + $0 + 'remove KEY');
+            process.nextTick(function () { output.emit('error', err) });
+            return readonly(output);
+        }
+        users.remove(argv._[1], function (err) {
+            if (err) return output.emit('error', err);
+            output.end();
+            if (cb) cb(null);
         });
         return readonly(output);
     }
