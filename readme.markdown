@@ -1,6 +1,6 @@
 # accountdown-command
 
-manage accountdown accounts on the command-line
+manage accountdown accounts from the command-line
 
 This is particularly useful in combination with
 [level-party](https://npmjs.org/package/level-party)
