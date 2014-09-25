@@ -16,7 +16,7 @@ module.exports = function (users, args, opts, cb) {
     var cmd = argv._[0];
     var $0 = opts.command ? opts.command + ' ' : '';
     if (cmd === 'help' || argv.help) {
-        return showHelp(opts.command);
+        return showHelp(opts.command, cb);
     }
     else if (cmd === 'create') {
         argv = subarg(args, {
@@ -56,13 +56,14 @@ module.exports = function (users, args, opts, cb) {
     }
 };
 
-function showHelp (cmd) {
+function showHelp (cmd, cb) {
     var usage = fs.createReadStream(__dirname + '/usage.txt');
+    if (cb) usage.once('end', cb);
     if (!cmd) return usage;
     var output = through();
     usage.pipe(concat(function (buf) {
         var body = buf.toString('utf8');
-        output.end(body.replace(/\$0/, opts.command));
+        output.end(body.replace(/\$0/g, cmd));
     }));
     return output;
 }
