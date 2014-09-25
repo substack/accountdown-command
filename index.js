@@ -34,7 +34,7 @@ module.exports = function (users, args, opts, cb) {
             return readonly(output);
         }
         users.create(argv._[1], uopts, function (err) {
-            if (err) return output.emit('error', err);
+            if (err) return output.emit('error', error(err));
             output.end();
             if (cb) cb();
         });
@@ -54,6 +54,21 @@ module.exports = function (users, args, opts, cb) {
         if (cb) output.on('error', cb);
         return readonly(users.list().pipe(output));
     }
+    else if (cmd === 'get') {
+        var output = through();
+        if (cb) output.on('error', cb);
+        if (!argv._[1]) {
+            var err = new Error('usage: ' + $0 + 'get ID}');
+            process.nextTick(function () { output.emit('error', err) });
+            return readonly(output);
+        }
+        users.get(argv._[1], function (err, value) {
+            if (err) return output.emit('error', error(err));
+            output.end(JSON.stringify(value, null, 2) + '\n');
+            cb();
+        });
+        return readonly(output);
+    }
 };
 
 function showHelp (cmd, cb) {
@@ -66,4 +81,10 @@ function showHelp (cmd, cb) {
         output.end(body.replace(/\$0/g, cmd));
     }));
     return output;
+}
+
+function error (err) {
+    if (!err) return new Error('undefined error');
+    if (err.message) return new Error(err.message);
+    return Error(err);
 }

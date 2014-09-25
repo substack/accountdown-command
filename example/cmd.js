@@ -11,7 +11,7 @@ var users = accountdown(db, {
 if (process.argv[2] === 'users') {
     command(users, process.argv.slice(3), function (err) {
         if (err) {
-            console.error(err + '\n')
+            console.error(err + '');
             process.exit(1);
         }
         db.close();
