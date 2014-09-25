@@ -8,7 +8,8 @@ var users = accountdown(db, {
     login: { basic: require('accountdown-basic') }
 });
 
-if (process.argv[2] === 'users') {
+var args = process.argv.slice(2);
+if (args[0] === 'users') {
     command(users, process.argv.slice(3), function (err) {
         if (err) {
             console.error(err + '');
@@ -17,8 +18,8 @@ if (process.argv[2] === 'users') {
         db.close();
     }).pipe(process.stdout);
 }
-else {
-    var server = require('./server.js')(users);
+else if (args[0] === 'server') {
+    var server = require('./lib/server.js')(users);
     server.listen(5000);
     console.log('http://localhost:5000');
 }

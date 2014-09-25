@@ -1,14 +1,41 @@
 $0 create ID {OPTIONS}
 
+  Create an account identified by ID with optional login and value properties:
+
+  --login.TYPE.PROP=VALUE
+  --value.PROP=VALUE
+
 $0 list
 
-$0 verify ID {OPTIONS}
+  List all accounts by newline separated IDs.
+
+$0 verify ID TYPE {CREDS}
+
+  Verify an ID by the CREDS specific to the TYPE of login.
 
 $0 get ID
 
-$0 put ID
+  Get the value of an account by its ID as json.
+
+$0 put ID VALUE
+
+  Put a new VALUE (or --value) for an ID that has already been created.
 
 $0 remove ID
+
+  Remove an ID and all its logins.
+
+$0 addlogin ID TYPE {CREDS}
+
+  Add a login TYPE for an existing ID with login-specific properties CREDS.
+
+$0 listlogin ID
+
+  List each active login TYPE for ID on its own line.
+
+$0 rmlogin ID TYPE
+
+  Remove a TYPE login for ID.
 
 $0 help
 

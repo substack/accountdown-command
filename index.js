@@ -184,6 +184,13 @@ module.exports = function (users, args, opts, cb) {
         });
         return readonly(output);
     }
+    else {
+        var h = showHelp();
+        h.on('end', function () {
+            if (cb) cb(new Error('specify a command.'));
+        });
+        return h;
+    }
 };
 
 function showHelp (cmd, cb) {
