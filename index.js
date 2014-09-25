@@ -122,6 +122,25 @@ module.exports = function (users, args, opts, cb) {
         });
         return readonly(output);
     }
+    else if (cmd === 'addlogin') {
+        var output = through();
+        argv = subarg(args, { alias: { i: 'id', t: 'type' } });
+        if (cb) output.on('error', cb);
+        var id = defined(argv.id, argv._[1]);
+        var type = defined(argv.type, argv._[2]);
+        
+        if (!id || !type) {
+            var err = new Error('usage: ' + $0 + 'addlogin ID TYPE {PARAMETERS}');
+            process.nextTick(function () { output.emit('error', err) });
+            return readonly(output);
+        }
+        
+        users.addLogin(id, type, argv, function (err) {
+            if (err) return output.emit('error', error(err));
+            if (cb) cb(null);
+        });
+        return readonly(output);
+    }
 };
 
 function showHelp (cmd, cb) {
