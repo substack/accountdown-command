@@ -43,7 +43,7 @@ module.exports = function (users, args, opts, cb) {
     else if (cmd === 'list') {
         var output = through.obj(
             function (row, enc, next) {
-                this.push(JSON.stringify(row) + '\n');
+                this.push(row.key + '\n');
                 next();
             },
             function () {

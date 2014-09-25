@@ -15,7 +15,7 @@ if (process.argv[2] === 'users') {
             process.exit(1);
         }
         db.close();
-    });
+    }).pipe(process.stdout);
 }
 else {
     var server = require('./server.js')(users);
