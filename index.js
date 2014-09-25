@@ -138,6 +138,7 @@ module.exports = function (users, args, opts, cb) {
         users.addLogin(id, type, argv, function (err) {
             if (err) return output.emit('error', error(err));
             if (cb) cb(null);
+            output.end();
         });
         return readonly(output);
     }
@@ -162,6 +163,26 @@ module.exports = function (users, args, opts, cb) {
             return readonly(output);
         }
         return readonly(users.listLogin(id).pipe(output));
+    }
+    else if (cmd === 'rmlogin') {
+        var output = through();
+        argv = subarg(args, { alias: { i: 'id', t: 'type' } });
+        if (cb) output.on('error', cb);
+        var id = defined(argv.id, argv._[1]);
+        var type = defined(argv.type, argv._[2]);
+        
+        if (!id || !type) {
+            var err = new Error('usage: ' + $0 + 'rmlogin ID TYPE');
+            process.nextTick(function () { output.emit('error', err) });
+            return readonly(output);
+        }
+        
+        users.removeLogin(id, type, function (err) {
+            if (err) return output.emit('error', error(err));
+            if (cb) cb(null);
+            output.end();
+        });
+        return readonly(output);
     }
 };
 
